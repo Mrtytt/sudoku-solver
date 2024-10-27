@@ -11,14 +11,16 @@ namespace SudokuGame
         {
             Board board = new Board();
             board.LoadBoard();
-            
+
             System.Console.WriteLine("board that highlights same numbers as x:8 y:2 (i:2 j:8)");
             board.PrintBoard(8, 2, PrintMode.same_numbers);
             //board.PrintBoard(x: 8, print_mode:PrintMode.select_numbers);
 
             Sudoku sudoku = new Sudoku(board);
-            System.Console.WriteLine("cannot be 9 if 0");
-            sudoku.PossibilityBoardForNum(9).PrintBoard(x: 0, print_mode: PrintMode.select_numbers);
+            System.Console.WriteLine("cannot be 1 if 0");
+            sudoku.PossibilityBoardForNum(7).PrintBoard(x: 0, print_mode: PrintMode.select_numbers);
+            System.Console.WriteLine("cannot be 2 if 0");
+            sudoku.PossibilityBoardForNum(8).PrintBoard(x: 0, print_mode: PrintMode.select_numbers);
             System.Console.WriteLine("how many possibilities there are");
             sudoku.PossibilityBoardCombined().PrintBoard(x: 1, y: 0, print_mode: PrintMode.dual, highlight_color2: ConsoleColor.DarkGreen);
         }
@@ -375,7 +377,7 @@ namespace SudokuGame
 
             Board res = new Board();
 
-            for (int i = 0; i < Board.BOARD_SIZE; i++)
+            for (int i = 1; i < Board.BOARD_SIZE + 1; i++)
             {
                 res = Board.SumBoards(res,PossibilityBoardForNum(i));
             }
