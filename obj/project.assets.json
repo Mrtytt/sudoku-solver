@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/gimbo/code/sudoku/sudoku/sudoku.csproj",
+      "projectUniqueName": "/home/gimbo/code/ai/sudoku/sudoku.csproj",
       "projectName": "sudoku",
-      "projectPath": "/home/gimbo/code/sudoku/sudoku/sudoku.csproj",
+      "projectPath": "/home/gimbo/code/ai/sudoku/sudoku.csproj",
       "packagesPath": "/home/gimbo/.nuget/packages/",
-      "outputPath": "/home/gimbo/code/sudoku/sudoku/obj/",
+      "outputPath": "/home/gimbo/code/ai/sudoku/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/gimbo/.nuget/NuGet/NuGet.Config"
@@ -59,7 +59,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.107/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.110/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "cJ4WTaD/w7gMB+vsHhI5UTcKZmJnu33tq5R2UnRfezva8wbjsCKGNpiaNCwA7wepiKwac5K9rDDrdCbzSfEDdw==",
+  "dgSpecHash": "tgFlV0sF/ZjCW06z1UsHmp4DlWYz/leUZqaNriVj7ux++N8GyOD4Kw7Autbkf6ceRw2JZBGYPZQi8EDBnbUgYg==",
   "success": true,
-  "projectFilePath": "/home/gimbo/code/sudoku/sudoku/sudoku.csproj",
+  "projectFilePath": "/home/gimbo/code/ai/sudoku/sudoku.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
