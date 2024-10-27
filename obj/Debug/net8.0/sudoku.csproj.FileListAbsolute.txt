@@ -1,0 +1,14 @@
+/home/gimbo/code/sudoku/sudoku/bin/Debug/net8.0/sudoku
+/home/gimbo/code/sudoku/sudoku/bin/Debug/net8.0/sudoku.deps.json
+/home/gimbo/code/sudoku/sudoku/bin/Debug/net8.0/sudoku.runtimeconfig.json
+/home/gimbo/code/sudoku/sudoku/bin/Debug/net8.0/sudoku.dll
+/home/gimbo/code/sudoku/sudoku/bin/Debug/net8.0/sudoku.pdb
+/home/gimbo/code/sudoku/sudoku/obj/Debug/net8.0/sudoku.GeneratedMSBuildEditorConfig.editorconfig
+/home/gimbo/code/sudoku/sudoku/obj/Debug/net8.0/sudoku.AssemblyInfoInputs.cache
+/home/gimbo/code/sudoku/sudoku/obj/Debug/net8.0/sudoku.AssemblyInfo.cs
+/home/gimbo/code/sudoku/sudoku/obj/Debug/net8.0/sudoku.csproj.CoreCompileInputs.cache
+/home/gimbo/code/sudoku/sudoku/obj/Debug/net8.0/sudoku.dll
+/home/gimbo/code/sudoku/sudoku/obj/Debug/net8.0/refint/sudoku.dll
+/home/gimbo/code/sudoku/sudoku/obj/Debug/net8.0/sudoku.pdb
+/home/gimbo/code/sudoku/sudoku/obj/Debug/net8.0/sudoku.genruntimeconfig.cache
+/home/gimbo/code/sudoku/sudoku/obj/Debug/net8.0/ref/sudoku.dll
