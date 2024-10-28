@@ -12,17 +12,23 @@ namespace SudokuGame
             Board board = new Board();
             board.LoadBoard();
 
-            System.Console.WriteLine("board that highlights same numbers as x:8 y:2 (i:2 j:8)");
-            board.PrintBoard(8, 2, PrintMode.same_numbers);
+            //System.Console.WriteLine("board that highlights same numbers as x:8 y:2 (i:2 j:8)");
+            //board.PrintBoard(8, 2, PrintMode.horizontal);
             //board.PrintBoard(x: 8, print_mode:PrintMode.select_numbers);
 
             Sudoku sudoku = new Sudoku(board);
-            System.Console.WriteLine("cannot be 1 if 0");
+            System.Console.WriteLine("cannot be 7 if 0");
             sudoku.PossibilityBoardForNum(7).PrintBoard(x: 0, print_mode: PrintMode.select_numbers);
-            System.Console.WriteLine("cannot be 2 if 0");
-            sudoku.PossibilityBoardForNum(8).PrintBoard(x: 0, print_mode: PrintMode.select_numbers);
-            System.Console.WriteLine("how many possibilities there are");
+
+            //Board.PrintArr(sudoku.PossibilityBoardForNum(7).BoxArr(5, 2),PrintMode.box);
+            
+            //System.Console.WriteLine("cannot be 9 if 0");
+            //sudoku.PossibilityBoardForNum(9).PrintBoard(x: 0, print_mode: PrintMode.select_numbers);
+
+            //System.Console.WriteLine("how many possibilities there are");
             sudoku.PossibilityBoardCombined().PrintBoard(x: 1, y: 0, print_mode: PrintMode.dual, highlight_color2: ConsoleColor.DarkGreen);
+
+
         }
         
     }
@@ -51,6 +57,7 @@ namespace SudokuGame
         public const char EMPTY_BOX_CHAR = '.';
 
         public int[,] board_data = new int[BOARD_SIZE, BOARD_SIZE];
+
 
         /// <summary>
         /// creates a board and fills it with 0es
@@ -242,6 +249,99 @@ namespace SudokuGame
 
             return res;
         }
+
+
+        /// <summary>
+        /// returns the row as an arr to further controls
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="j"></param>
+        /// <returns></returns>
+        public int[] RowArr(int i, int j)
+        {
+            int[] res = new int[BOARD_SIZE];
+            for (int i_in = 0; i_in < BOARD_SIZE; i_in++)
+            {
+                res[i_in] = board_data[i_in, j];
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// returns the col as an arr to further controls
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="j"></param> 
+        /// <returns></returns>
+        public int[] ColArr(int i, int j)
+        {
+            int[] res = new int[BOARD_SIZE];
+            for (int j_in = 0; j_in < BOARD_SIZE; j_in++)
+            {
+                res[j_in] = board_data[i, j_in];
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// returns the box as an arr to further controls
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="j"></param>
+        /// <returns></returns>
+        public int[] BoxArr(int i, int j)
+        {
+            int[] res = new int[BOARD_SIZE];
+            int counter = 0;
+            for (int i_in = 0; i_in < Board.BOARD_SIZE; i_in++)
+            {
+                for (int j_in = 0; j_in < Board.BOARD_SIZE; j_in++)
+                {
+                    int box_i = i / 3;
+                    int box_j = j / 3;
+
+                    int box_i_in = i_in / 3;
+                    int box_j_in = j_in / 3;
+
+                    if (box_i == box_i_in && box_j == box_j_in)
+                        res[counter++] = board_data[i_in, j_in];
+                }
+            }
+            return res;
+        }
+
+        public static void PrintArr(int[] arr, PrintMode print_mode)
+        {
+            if (print_mode == PrintMode.horizontal)
+                for (int i = 0; i < BOARD_SIZE; i++)
+                    PrintVal(arr[i]);
+            if (print_mode == PrintMode.vertical)
+                for (int i = 0; i < BOARD_SIZE; i++)
+                    PrintVal(arr[i],true);
+            if (print_mode == PrintMode.box)
+                for (int i = 0; i < BOARD_SIZE; i++)
+                {
+                    if (i == 3 || i == 6)
+                        System.Console.WriteLine();
+                    PrintVal(arr[i]);
+                }
+            System.Console.WriteLine();
+        }
+
+        public static void PrintVal(int val, bool next_line = false, ConsoleColor color = ConsoleColor.White)
+        {
+            Console.ForegroundColor = color;
+            if (val == 0)
+                Console.Write(EMPTY_BOX_CHAR + " ");
+            else
+                Console.Write(val + " ");
+            Console.ResetColor();
+
+            if (next_line)
+                Console.WriteLine();
+        }
+
+
     }
 
     public class Move {
@@ -266,6 +366,9 @@ namespace SudokuGame
     public class Sudoku {
 
         Board board;
+
+        Board[] possibility_boards = new Board[Board.BOARD_SIZE];
+        Board possibility_boards_combined;
 
         public Sudoku(Board board)
         {
@@ -304,6 +407,18 @@ namespace SudokuGame
         /// <param name="num"></param>
         /// <returns></returns>
         public Board MockBoardForNum(int num) { return new Board(); }
+
+
+        public Move[] CreateLoneArr() {
+            List<Move> moves = new List<Move>();
+
+            // select number
+                // check rows
+                // check cols
+                // check  
+
+            return moves.ToArray();
+        }
 
         /// <summary>
         /// creates an possibility board of evaluation numbers for h(n)
@@ -364,6 +479,7 @@ namespace SudokuGame
                         
                     }
 
+            possibility_boards[num - 1] = res;
             return res;
         }
 
@@ -382,7 +498,40 @@ namespace SudokuGame
                 res = Board.SumBoards(res,PossibilityBoardForNum(i));
             }
 
+            possibility_boards_combined = res;
             return res;
+        }
+
+        /// <summary>
+        /// creates better possibility boards
+        /// </summary>
+        /// <returns></returns>
+        public Board PossibilityBoardBetter()
+        {
+            /// use repeatance
+            CheckBoxForRepeatance(0,0,new Board());
+
+            return new Board();
+        }
+
+
+        /// <summary>
+        /// checks in box for horizontal or vertical placement if it founds returns the resutl
+        /// PrintMode.def for lonelynums
+        /// PrintMode.vertical , int for vertical repatance and the col number of vertical repeatance
+        /// PrintMode.horizotnal , int for horizotnal repatance and the row number of horizotnal repeatance
+        /// if it founds more than one repeatance it defaults to none
+        /// </summary>
+        /// <param name=""></param>
+        /// <param name=""></param>
+        /// <returns></returns>
+        public (PrintMode, int) CheckBoxForRepeatance(int box_i, int box_j, Board board)
+        {
+            // check for lonely number
+            // check for horizontal
+            // check for vertical
+
+            return (PrintMode.none, -1);
         }
 
         /// <summary>
