@@ -1,10 +1,14 @@
-﻿using System.Drawing;
+﻿using System.Data;
+using System.Diagnostics.Metrics;
+using System.Drawing;
+using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks.Dataflow;
 
 namespace SudokuGame
 {
-    
+
     public class App
     {
         public static void Main()
@@ -21,16 +25,17 @@ namespace SudokuGame
             sudoku.PossibilityBoardForNum(7).PrintBoard(x: 0, print_mode: PrintMode.select_numbers);
 
             //Board.PrintArr(sudoku.PossibilityBoardForNum(7).BoxArr(5, 2),PrintMode.box);
-            
+
             //System.Console.WriteLine("cannot be 9 if 0");
             //sudoku.PossibilityBoardForNum(9).PrintBoard(x: 0, print_mode: PrintMode.select_numbers);
 
             //System.Console.WriteLine("how many possibilities there are");
-            sudoku.PossibilityBoardCombined().PrintBoard(x: 1, y: 0, print_mode: PrintMode.dual, highlight_color2: ConsoleColor.DarkGreen);
+            //sudoku.PossibilityBoardCombined().PrintBoard(x: 1, y: 0, print_mode: PrintMode.dual, highlight_color2: ConsoleColor.DarkGreen);
 
+            sudoku.PossibilityBoardBetter();
 
         }
-        
+
     }
 
     public enum PrintMode
@@ -51,7 +56,7 @@ namespace SudokuGame
     public class Board
     {
 
-        public const int BOARD_SIZE = 9; 
+        public const int BOARD_SIZE = 9;
         public const string FILE_PATH = "board.txt";
 
         public const char EMPTY_BOX_CHAR = '.';
@@ -66,7 +71,7 @@ namespace SudokuGame
         {
             for (int i = 0; i < BOARD_SIZE; i++)
                 for (int j = 0; j < BOARD_SIZE; j++)
-                    board_data[i,j] = val;
+                    board_data[i, j] = val;
         }
 
         public void LoadBoard(string file_path = "boards/board")
@@ -106,7 +111,7 @@ namespace SudokuGame
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="boardcolor"></param>
-        public void PrintBoard( int x = -1,int y = -1, PrintMode print_mode = PrintMode.none,
+        public void PrintBoard(int x = -1, int y = -1, PrintMode print_mode = PrintMode.none,
                                 ConsoleColor border_color = ConsoleColor.DarkYellow,
                                 ConsoleColor highlight_color = ConsoleColor.DarkRed,
                                 ConsoleColor highlight_color2 = ConsoleColor.Red
@@ -134,7 +139,7 @@ namespace SudokuGame
                         Console.ResetColor();
                     }
                     if (print_mode == PrintMode.none)
-                       PrintPos(i,j);
+                        PrintPos(i, j);
                     else if (print_mode == PrintMode.def)
                     {
                         if (i == y && j == x)
@@ -172,7 +177,7 @@ namespace SudokuGame
                             PrintPos(i, j);
                     }
                     else if (print_mode == PrintMode.box)
-                    { 
+                    {
                         int box_x = x / 3;
                         int box_y = y / 3;
 
@@ -190,7 +195,7 @@ namespace SudokuGame
                     {
                         if (i == y && j == x)
                             PrintPos(i, j, highlight_color);
-                        else if (board_data[y,x] == board_data[i, j])
+                        else if (board_data[y, x] == board_data[i, j])
                             PrintPos(i, j, highlight_color2);
                         else
                             PrintPos(i, j);
@@ -227,8 +232,8 @@ namespace SudokuGame
         public void PrintPos(int i, int j, ConsoleColor color = ConsoleColor.White)
         {
             Console.ForegroundColor = color;
-            int val = board_data[i,j];
-            if(val == 0)
+            int val = board_data[i, j];
+            if (val == 0)
                 Console.Write(EMPTY_BOX_CHAR + " ");
             else
                 Console.Write(val + " ");
@@ -243,7 +248,7 @@ namespace SudokuGame
             {
                 for (int j = 0; j < BOARD_SIZE; j++)
                 {
-                    res.board_data[i,j] = board1.board_data[i, j] + board2.board_data[i, j];
+                    res.board_data[i, j] = board1.board_data[i, j] + board2.board_data[i, j];
                 }
             }
 
@@ -317,7 +322,7 @@ namespace SudokuGame
                     PrintVal(arr[i]);
             if (print_mode == PrintMode.vertical)
                 for (int i = 0; i < BOARD_SIZE; i++)
-                    PrintVal(arr[i],true);
+                    PrintVal(arr[i], true);
             if (print_mode == PrintMode.box)
                 for (int i = 0; i < BOARD_SIZE; i++)
                 {
@@ -344,7 +349,8 @@ namespace SudokuGame
 
     }
 
-    public class Move {
+    public class Move
+    {
         int x; // j
         int y; // i
         int value;
@@ -358,31 +364,36 @@ namespace SudokuGame
 
         public void PrintMove()
         {
-            System.Console.WriteLine( "({0},{1}) {2}", x, y, value);
+            System.Console.WriteLine("({0},{1}) {2}", x, y, value);
         }
 
     }
 
-    public class Sudoku {
+    public class Sudoku
+    {
 
-        Board board;
+        public Board board;
 
-        Board[] possibility_boards = new Board[Board.BOARD_SIZE];
-        Board possibility_boards_combined;
+        public Board[] possibility_boards = new Board[Board.BOARD_SIZE];
+        public Board possibility_boards_combined;
+
+        public List<Move> moves_100 = new List<Move>();
 
         public Sudoku(Board board)
         {
             this.board = board;
+            this.PossibilityBoardCombined();
         }
 
         /// <summary>
         /// finds next move
         /// </summary>
-        public Move FindNextMove() {
+        public Move FindNextMove()
+        {
 
             /// create the possiblitiy board to see possible moves
             /// create the mock board to calculate values
-            
+
             return new Move();
         }
 
@@ -393,12 +404,18 @@ namespace SudokuGame
         /// <summary>
         /// f(n) = g(n) + h(n)
         /// </summary>
-        public int EvalFunction() { return 0;}
+        public int EvalFunction()
+        {
+            return CostFunc() + HeuristicFunc();
+        }
 
         /// <summary>
         ///  h(n)
         /// </summary>
-        public int HeuristicFunc() { return 0;}
+        public int HeuristicFunc()
+        {
+            return 0;
+        }
 
         /// <summary>
         /// creates an mock board of evaluation numbers for h(n)
@@ -409,13 +426,14 @@ namespace SudokuGame
         public Board MockBoardForNum(int num) { return new Board(); }
 
 
-        public Move[] CreateLoneArr() {
+        public Move[] CreateLoneArr()
+        {
             List<Move> moves = new List<Move>();
 
             // select number
-                // check rows
-                // check cols
-                // check  
+            // check rows
+            // check cols
+            // check  
 
             return moves.ToArray();
         }
@@ -427,7 +445,8 @@ namespace SudokuGame
         /// </summary>
         /// <param name="num"></param>
         /// <returns></returns>
-        public Board PossibilityBoardForNum(int num) {
+        public Board PossibilityBoardForNum(int num)
+        {
 
             Board res = new Board(1);
 
@@ -437,9 +456,9 @@ namespace SudokuGame
             {
                 for (int j = 0; j < Board.BOARD_SIZE; j++)
                 {
-                    if (board.board_data[i,j] > 0)
+                    if (board.board_data[i, j] > 0)
                     {
-                        res.board_data[i,j] = 0;
+                        res.board_data[i, j] = 0;
                     }
                 }
             }
@@ -448,13 +467,13 @@ namespace SudokuGame
             // get the numbers into moves arrray 
             for (int i = 0; i < Board.BOARD_SIZE; i++)
                 for (int j = 0; j < Board.BOARD_SIZE; j++)
-                    if (board.board_data[i,j] == num)
+                    if (board.board_data[i, j] == num)
                     {
 
                         // set horizontal 0 same j
                         for (int i_in = 0; i_in < Board.BOARD_SIZE; i_in++)
                         {
-                            res.board_data[i_in,j] = 0;
+                            res.board_data[i_in, j] = 0;
                         }
                         // set vertical 0 same i
                         for (int j_in = 0; j_in < Board.BOARD_SIZE; j_in++)
@@ -462,9 +481,9 @@ namespace SudokuGame
                             res.board_data[i, j_in] = 0;
                         }
                         // set box 0
-                        for (int i_in = 0; i_in <  Board.BOARD_SIZE; i_in++)
+                        for (int i_in = 0; i_in < Board.BOARD_SIZE; i_in++)
                         {
-                            for (int j_in = 0; j_in <  Board.BOARD_SIZE; j_in++)
+                            for (int j_in = 0; j_in < Board.BOARD_SIZE; j_in++)
                             {
                                 int box_i = i / 3;
                                 int box_j = j / 3;
@@ -473,10 +492,10 @@ namespace SudokuGame
                                 int box_j_in = j_in / 3;
 
                                 if (box_i == box_i_in && box_j == box_j_in)
-                                    res.board_data[i_in,j_in] = 0;
+                                    res.board_data[i_in, j_in] = 0;
                             }
                         }
-                        
+
                     }
 
             possibility_boards[num - 1] = res;
@@ -489,13 +508,14 @@ namespace SudokuGame
         /// </summary>
         /// <param name="num"></param>
         /// <returns></returns>
-        public Board PossibilityBoardCombined() { 
+        public Board PossibilityBoardCombined()
+        {
 
             Board res = new Board();
 
             for (int i = 1; i < Board.BOARD_SIZE + 1; i++)
             {
-                res = Board.SumBoards(res,PossibilityBoardForNum(i));
+                res = Board.SumBoards(res, PossibilityBoardForNum(i));
             }
 
             possibility_boards_combined = res;
@@ -506,38 +526,203 @@ namespace SudokuGame
         /// creates better possibility boards
         /// </summary>
         /// <returns></returns>
-        public Board PossibilityBoardBetter()
+        public void PossibilityBoardBetter()
         {
-            /// use repeatance
-            CheckBoxForRepeatance(0,0,new Board());
 
-            return new Board();
+            (PrintMode, (int, int)) repeatance;
+            /// use repeatance
+            for (int k = 0; k < Board.BOARD_SIZE; k++)
+            {
+                if (k != 6)
+                    continue;
+
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        System.Console.WriteLine("{0},{1}", i * 3, j * 3);
+                        repeatance = CheckBoxForRepeatance(i, j, possibility_boards[k]);
+
+                        // update the possibilityboard for next check
+
+                        if (repeatance.Item1 == PrintMode.none)
+                            continue;
+                        else if(repeatance.Item1 == PrintMode.def)
+                        {
+                            Move move = new Move(repeatance.Item2.Item2, repeatance.Item2.Item1, k + 1);
+                            move.PrintMove();
+                            moves_100.Add(move);
+
+                            possibility_boards[6].PrintBoard();
+                            System.Console.WriteLine("horizontal repeatance clearing at row {0} ", repeatance.Item2.Item1);
+                            for (int i_in = 0; i_in < Board.BOARD_SIZE; i_in++)
+                            {
+                                possibility_boards[k].board_data[i_in, repeatance.Item2.Item1] = 0;
+                            }
+                            possibility_boards[6].PrintBoard();
+
+                            System.Console.WriteLine("vertical repeatance clearing at column {0} ", repeatance.Item2.Item2);
+                            possibility_boards[6].PrintBoard();
+                            for (int i_in = 0; i_in < Board.BOARD_SIZE; i_in++)
+                            {
+                                if (i_in / 3 == repeatance.Item2.Item1 / 3)
+                                    continue;
+                                possibility_boards[k].board_data[i_in, repeatance.Item2.Item2] = 0;
+                            }
+                            possibility_boards[6].PrintBoard();
+                        }
+                        else if (repeatance.Item1 == PrintMode.horizontal)
+                        {
+                            possibility_boards[6].PrintBoard();
+                            System.Console.WriteLine("horizontal repeatance clearing at row {0} ", repeatance.Item2.Item1);
+                            for (int i_in = 0; i_in < Board.BOARD_SIZE; i_in++)
+                            {
+                                possibility_boards[k].board_data[i_in, repeatance.Item2.Item1] = 0;
+                            }
+                            possibility_boards[6].PrintBoard();
+                        }
+                        else if (repeatance.Item1 == PrintMode.vertical)
+                        {
+                            System.Console.WriteLine("vertical repeatance clearing at column {0} ", repeatance.Item2.Item2);
+                            possibility_boards[6].PrintBoard();
+                            for (int i_in = 0; i_in < Board.BOARD_SIZE; i_in++)
+                            {
+                                if (i_in / 3 == repeatance.Item2.Item1 / 3)
+                                    continue;
+                                possibility_boards[k].board_data[i_in, repeatance.Item2.Item2] = 0;
+                            }
+                            possibility_boards[6].PrintBoard();
+                        }
+                    }
+                }
+            }
+            
+            
+            // check next until the end
+
+            // do for all numbers 
+            possibility_boards[6].PrintBoard();
         }
 
 
         /// <summary>
         /// checks in box for horizontal or vertical placement if it founds returns the resutl
         /// PrintMode.def for lonelynums
-        /// PrintMode.vertical , int for vertical repatance and the col number of vertical repeatance
-        /// PrintMode.horizotnal , int for horizotnal repatance and the row number of horizotnal repeatance
+        /// PrintMode.vertical , int for vertical repeatance and the col number of vertical repeatance
+        /// PrintMode.horizotnal , int for horizotnal repeatance and the row number of horizotnal repeatance
         /// if it founds more than one repeatance it defaults to none
         /// </summary>
         /// <param name=""></param>
         /// <param name=""></param>
         /// <returns></returns>
-        public (PrintMode, int) CheckBoxForRepeatance(int box_i, int box_j, Board board)
+        public (PrintMode, (int,int)) CheckBoxForRepeatance(int box_i, int box_j, Board board)
         {
-            // check for lonely number
-            // check for horizontal
-            // check for vertical
+            bool repeatance = false;
+    
+                int[] box;
+            box = board.BoxArr(box_i * 3, box_j * 3);
+            Board.PrintArr(box, PrintMode.box);
 
-            return (PrintMode.none, -1);
+
+            List<int> ints = new List<int>(); 
+            // count numbers and assign them to an arr for later use with their respective positions
+            int counter = 0;
+            for (int i = 0; i < Board.BOARD_SIZE; i++)
+            {
+                int num = box[i];
+                if (num == 1)
+                {
+                    ints.Add(i);
+                    counter++;
+                }
+            }
+
+            int[] int_arr = ints.ToArray();
+
+
+            // check for lonely number
+            if (counter == 1)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                System.Console.WriteLine("Lonely Number");
+                Console.ResetColor();
+                return (PrintMode.def, BoxtoReal(box_i,box_j, int_arr[0]));
+            }
+            else if (counter == 2)
+            {
+                // check for horizontal
+                if(int_arr[0]/3 == int_arr[1] / 3)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    System.Console.WriteLine("Horizontal at {0}", int_arr[0]);
+                    Console.ResetColor();
+                    return (PrintMode.horizontal, BoxtoReal(box_i, box_j, int_arr[0]));
+                }
+                // check for vertical
+                if (int_arr[0] % 3 == int_arr[1] % 3)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    System.Console.WriteLine("Vertical at {0}", int_arr[0]);
+                    Console.ResetColor();
+                    return (PrintMode.vertical, BoxtoReal(box_i, box_j, int_arr[0]));
+                }
+            }
+            else if (counter == 3)
+            {
+                // check for horizontal
+                if (int_arr[0] / 3 == int_arr[1] / 3 && int_arr[0] / 3 == int_arr[2] / 3)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    System.Console.WriteLine("Horizontal at {0}", int_arr[0]);
+                    Console.ResetColor();
+                    return (PrintMode.horizontal, BoxtoReal(box_i, box_j, int_arr[0]));
+                }
+                // check for vertical
+                if (int_arr[0] % 3 == int_arr[1] % 3 && int_arr[0] % 3 == int_arr[2] % 3)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    System.Console.WriteLine("Vertical at {0}", int_arr[0]);
+                    Console.ResetColor();
+                    return (PrintMode.vertical, BoxtoReal(box_i, box_j, int_arr[0]));
+                }
+            }
+
+
+
+            System.Console.WriteLine();
+
+
+
+            return (PrintMode.none, (-1,-1));
+        }
+
+        /// <summary>
+        /// uses int box value and boxes i, j values to find its original placement
+        /// </summary>
+        /// <returns></returns>
+        public static (int,int) BoxtoReal(int box_i, int box_j, int in_box_number)
+        {
+            //int startRow = box_l;
+            // in: 0,0 , 3
+
+            // ij0 1 2   yx 0 1 2
+            // 0 . . .   0
+            // 1 @ . .   1
+            // 2 . . .   2
+
+            // out: 1, 0
+            Console.ForegroundColor = ConsoleColor.Red;
+            System.Console.WriteLine("({0},{1}) {2}", box_i,  box_j,  in_box_number);
+            System.Console.WriteLine("({0},{1})",box_i * 3 + in_box_number / 3, box_j * 3 + in_box_number % 3);
+            Console.ResetColor();
+
+            return (box_i*3 + in_box_number / 3 , box_j * 3 + in_box_number % 3);
         }
 
         /// <summary>
         /// g(n) = constant
         /// </summary>
-        public int CostFunc() { return 1;}
+        public int CostFunc() { return 1; }
 
     }
 }
