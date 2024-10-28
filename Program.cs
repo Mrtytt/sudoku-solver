@@ -150,6 +150,8 @@
                 sudoku.moves_100 = new List<Move>();
                 sudoku.board.PrintBoard();
             }
+
+            sudoku.possibility_boards_combined.PrintBoard();
         }
 
     }
