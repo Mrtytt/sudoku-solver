@@ -1,3 +1,6 @@
+using System;
+using System.Reflection.Metadata;
+
 namespace Program
 {
 
@@ -6,78 +9,72 @@ namespace Program
     /// </summary>
     public class Sudoku
     {
+        public const int MORALE_BOOST = 2;
+        public const int CONSTANT_COST = 5*5;
 
         public Board board;
 
         public Board[] possibility_boards = new Board[Board.BOARD_SIZE];
+
         public Board possibility_boards_combined;
 
-        public List<Move> moves_100 = new List<Move>();
+        public Move obvious_move = new Move();
+
+
+        public int EmptyCellCount;
+        public int EmptyCellCountSquared;
 
         public Sudoku(Board board)
         {
             this.board = board;
-            this.PossibilityBoardCombined();
+            CalcEmptyCellCount();
+            PossibilityBoardBetter();
         }
 
-        /// <summary>
-        /// finds next move
-        /// </summary>
-        public Move FindNextMove()
+        public int Squared(int val)
         {
-
-            /// create the possiblitiy board to see possible moves
-            /// create the mock board to calculate values
-
-            return new Move();
+            return val * val;
         }
-
-
-
-
+        public void CalcEmptyCellCount()
+        {
+            int counter = 0;
+            for (int i = 0; i < Board.BOARD_SIZE; i++)
+               for (int j = 0; j < Board.BOARD_SIZE; j++)
+                    if (board.board_data[i,j] == 0)
+                        counter++;
+            EmptyCellCount = counter;
+            EmptyCellCountSquared = counter*counter;
+        }
 
         /// <summary>
         /// f(n) = g(n) + h(n)
         /// </summary>
-        public int EvalFunction()
+        public int EvalFunction(int i, int j, int num)
         {
-            return CostFunc() + HeuristicFunc();
+            return CostFunc() + HeuristicFunc(i, j, num);
         }
+
+        /// <summary>
+        /// g(n) = constant
+        /// </summary>
+        public int CostFunc() { return CONSTANT_COST; }
 
         /// <summary>
         ///  h(n)
         /// </summary>
-        public int HeuristicFunc()
+        public int HeuristicFunc(int i,int j, int num)
         {
-
             // if move is 100
-            //      h(n) = empty cell count^2 - morale
+            //      h(n) = empty cell count^2 - full cell count^2 - morale
             // else
             //      h(n) = possibility of the moves that can be placed there^2 + empty cell count^2
 
 
-            return 0;
-        }
+            if (obvious_move.isSame(i,j,num))
+                return EmptyCellCountSquared - Squared(Board.BOARD_SIZE) - MORALE_BOOST;
+            else
+                return Squared(possibility_boards[num-1].board_data[i,j]) + EmptyCellCountSquared;
 
-        /// <summary>
-        /// creates an mock board of evaluation numbers for h(n)
-        /// 
-        /// </summary>
-        /// <param name="num"></param>
-        /// <returns></returns>
-        public Board MockBoardForNum(int num) { return new Board(); }
-
-
-        public Move[] CreateLoneArr()
-        {
-            List<Move> moves = new List<Move>();
-
-            // select number
-            // check rows
-            // check cols
-            // check  
-
-            return moves.ToArray();
         }
 
         /// <summary>
@@ -179,7 +176,7 @@ namespace Program
                                 Move move = new Move(j, i, k + 1);
                                 System.Console.WriteLine("ADDING MOVE i{0} j{1} k{2} ", i, j, k + 1);
                                 move.PrintMove();
-                                moves_100.Add(move);
+                                obvious_move = move;
                             }
                             if (foundmove)
                                 break;
@@ -202,6 +199,7 @@ namespace Program
         public void PossibilityBoardBetter(bool debug = false, bool debug2 = false)
         {
 
+            PossibilityBoardCombined();
 
             (PrintMode, (int, int)) repeatance;
             /// use repeatance
@@ -233,7 +231,7 @@ namespace Program
                             Move move = new Move(repeatance.Item2.Item2, repeatance.Item2.Item1, k + 1);
                             if (debug)
                                 move.PrintMove();
-                            moves_100.Add(move);
+                            obvious_move = move;
 
                             vertical = true;
                             horizontal = true;
@@ -423,15 +421,17 @@ namespace Program
         /// <returns></returns>
         public static (int, int) BoxtoReal(int box_i, int box_j, int in_box_number, bool debug = false)
         {
-            //int startRow = box_l;
+            // int startRow = box_l;
             // in: 0,0 , 3
+
+            // out: 1, 0
+
+            // PIN: COME HERE IF YOU FORGET ARRANGEMENTS
 
             // ij0 1 2   yx 0 1 2
             // 0 . . .   0
             // 1 @ . .   1
             // 2 . . .   2
-
-            // out: 1, 0
 
             if (debug)
             {
@@ -444,10 +444,12 @@ namespace Program
             return (box_i * 3 + in_box_number / 3, box_j * 3 + in_box_number % 3);
         }
 
-        /// <summary>
-        /// g(n) = constant
-        /// </summary>
-        public int CostFunc() { return 1; }
+        public static bool IsSolved(Board board)
+        {
+
+            // check if its solved or not
+            return false;
+        }
 
     }
 }

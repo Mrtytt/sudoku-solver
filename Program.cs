@@ -27,18 +27,6 @@ namespace Program
 
             //System.Console.WriteLine("how many possibilities there are");
             //sudoku.PossibilityBoardCombined().PrintBoard(x: 1, y: 0, print_mode: PrintMode.dual, highlight_color2: ConsoleColor.DarkGreen);
-
-            System.Console.WriteLine("##### 1");
-            sudoku.PossibilityBoardBetter();
-            foreach (Move move in sudoku.moves_100)
-            {
-                System.Console.WriteLine("MOVING");
-                move.PrintMove();
-                sudoku.board.board_data[move.y,move.x] = move.value;
-                sudoku.moves_100 = new List<Move>();
-                sudoku.board.PrintBoard();
-
-            }
         }
 
     }
@@ -78,6 +66,13 @@ namespace Program
             Console.ForegroundColor = consoleColor;
             System.Console.WriteLine("({0},{1}) {2}", x, y, value);
             Console.ResetColor();
+        }
+
+        public bool isSame(int i, int j, int value)
+        {
+            if (this.x == j && this.y == i && this.value == value)
+                return true;
+            return false;
         }
 
     }

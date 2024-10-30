@@ -8,7 +8,15 @@ namespace Program
 
         public void GenerateSuccessor()
         {
-            // get all possible moves and add them to fringe
+            State bestState = fringe.SelectLowestCost();
+            if (Sudoku.IsSolved(bestState.board))
+            {
+                
+            }
+
+            // get the current best board
+            // check if its solved
+            // create all possible moves and add them to fringe
         }
 
         public void Solve()
