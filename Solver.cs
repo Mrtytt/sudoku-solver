@@ -20,12 +20,14 @@ namespace Program
             // get the current best board
             // check if its solved
             State bestState = fringe.SelectLowestCost();
-            if (Sudoku.IsSolved(bestState.board))
+            if (Sudoku.IsSolved(bestState.board, false))
             {
                 isSolved = true;
                 solution = bestState.board;
                 return;
             }
+
+            Sudoku.GetAllSuccessors(bestState.board, fringe);
 
             // TODO: create all possible moves and add them to fringe
         }

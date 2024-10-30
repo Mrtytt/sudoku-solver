@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics.Metrics;
+using System.Globalization;
 using System.Reflection.Metadata;
 
 namespace Program
@@ -444,10 +446,82 @@ namespace Program
             return (box_i * 3 + in_box_number / 3, box_j * 3 + in_box_number % 3);
         }
 
-        public static bool IsSolved(Board board)
+        public static void GetAllSuccessors(Board board, Fringe fringe)
         {
+            Sudoku su = new Sudoku(board);
+
+            int counter = 1;
+            foreach (Board possibility_board in su.possibility_boards)
+            {
+                for (int i = 0; i < Board.BOARD_SIZE; i++)
+                    for (int j = 0; j < Board.BOARD_SIZE; j++)
+                        fringe.AddState(new State(su.EvalFunction(i, j, counter), board, new Move(j, i, counter)));
+                        
+                counter++;
+            }    
+        }
+        
+        
+        public static bool IsSolved(Board board, bool debug = false)
+        {
+            if (debug)
+            {
+                Board saved_board = new Board();
+                board.LoadBoard("boards/solved-board");
+                for (int i = 0; i < Board.BOARD_SIZE; i++)
+                    for (int j = 0; j < Board.BOARD_SIZE; j++)
+                        if (board.board_data[i,j] != saved_board.board_data[i,j])
+                            return false;
+                            
+                return true;
+            }
+
+            //satır
+            for (int i = 0; i < Board.BOARD_SIZE; i++)
+            {
+                bool[] rowCheck = new bool[Board.BOARD_SIZE+1];
+                for (int j = 0; j < Board.BOARD_SIZE; j++)
+                {   
+                    int num = board.board_data[i,j];
+                    if(num < 1 || num > 9 || rowCheck[num])
+                        return false;
+                    rowCheck[num] = true;
+                }
+            }
+
+            //sütun
+            for (int j = 0; j < Board.BOARD_SIZE; j++)
+            {
+                bool[] colCheck = new bool[Board.BOARD_SIZE+1];
+                for (int i = 0; i < Board.BOARD_SIZE; i++)
+                {   
+                    int num = board.board_data[i,j];
+                    if(num < 1 || num > 9 || colCheck[num])
+                        return false;
+                    colCheck[num] = true;
+                }
+            }
             
-            return false;
+            // 3x3
+            
+            for (int boxRow = 0; boxRow < Board.BOARD_SIZE; boxRow+=3)
+            {
+                for (int boxCol = 0; boxCol < Board.BOARD_SIZE; boxCol+=3)
+                {
+                    bool[] boxCheck = new bool[Board.BOARD_SIZE+1];
+                    for (int i = 0; i < Math.Sqrt(Board.BOARD_SIZE); i++)
+                    {
+                        for (int j = 0; j < Math.Sqrt(Board.BOARD_SIZE); j++)
+                        {
+                            int num = board.board_data[boxRow + i,boxCol + j];
+                            if(num < 1 || num > 9 || boxCheck[num])
+                                return false;
+                            boxCheck[num] = true;
+                        }
+                    }
+                }   
+            }
+            return true;
         }
 
     }
