@@ -1,5 +1,20 @@
 namespace Program
 {
+    public enum PrintMode
+    {
+        none,           //  doesn't highlight
+        def,            //  highlights just the number
+        dual,           //  highligts two diffrent selected numbers
+        horizontal,     //  highlights the row
+        vertical,       //  highlights the column
+        cross,          //  highlights both row and column
+        box,            //  highlights the box
+        same_numbers,   //  highlights all the numbers
+        select_numbers, //  highlights all the numbers that is selected
+        selected_numbers_crosses, // not yet implemented
+
+    }
+
     public class Board
     {
 

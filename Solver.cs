@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace Program
 {
     public class Solver
@@ -6,23 +8,44 @@ namespace Program
         
         public bool isSolved = false;
 
+        public Board solution;
+
+        public Solver(Board board)
+        {
+            fringe.AddState(new State(0, board, new Move()));
+        }
+
         public void GenerateSuccessor()
         {
+            // get the current best board
+            // check if its solved
             State bestState = fringe.SelectLowestCost();
             if (Sudoku.IsSolved(bestState.board))
             {
-                
+                isSolved = true;
+                solution = bestState.board;
+                return;
             }
 
-            // get the current best board
-            // check if its solved
-            // create all possible moves and add them to fringe
+            // TODO: create all possible moves and add them to fringe
         }
 
         public void Solve()
         {
             //while is not solved 
             //      generatesuccessor()
+
+            Stopwatch sw = new Stopwatch();
+            Stopwatch.StartNew();       
+            long l = Stopwatch.GetTimestamp();
+
+            while (!isSolved)
+            {
+                GenerateSuccessor();
+            }
+
+            TimeSpan ts = Stopwatch.GetElapsedTime(l);
+            System.Console.Write("SOLVED in {0}", ts.ToString());
         }
     }
 

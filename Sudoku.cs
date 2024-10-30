@@ -446,8 +446,7 @@ namespace Program
 
         public static bool IsSolved(Board board)
         {
-
-            // check if its solved or not
+            
             return false;
         }
 
