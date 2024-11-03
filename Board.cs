@@ -35,6 +35,20 @@ namespace Program
                     board_data[i, j] = val;
         }
 
+        public Board(int[,] arr)
+        {
+            this.board_data = CopyArray(arr);
+        }
+
+        private int[,] CopyArray(int[,] arr)
+        {
+            int[,] newBoard = new int[9, 9];
+            Array.Copy(arr, newBoard, arr.Length);
+            return newBoard;
+        }
+
+
+
         public void LoadBoard(string file_path = "boards/board")
         {
             using (StreamReader reader = new StreamReader(file_path))
