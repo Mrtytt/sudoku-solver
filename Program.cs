@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System;
+using System.Diagnostics;
+using System.Threading;
 
 namespace SudokuSolver
 {
@@ -17,9 +20,11 @@ namespace SudokuSolver
 
         public void Solve()
         {
+            long l = Stopwatch.GetTimestamp();
+
             int[,] initialState = puzzle;
             openSet.Enqueue(initialState, 0);
-
+            
             while (openSet.Count > 0)
             {
                 int[,] current = openSet.Dequeue();
@@ -27,13 +32,17 @@ namespace SudokuSolver
                 if (IsSolved(current))
                 {
                     PrintSolution(current);
+                    System.Console.WriteLine("Solved in {0}",Stopwatch.GetElapsedTime(l).TotalMilliseconds);
                     return;
                 }
 
+                GetNeighbors(current,ref openSet);
+                /*
                 foreach (var neighbor in GetNeighbors(current))
                 {
                     openSet.Enqueue(neighbor, 0);
                 }
+                */
             }
 
             Console.WriteLine("No solution found.");
@@ -49,7 +58,7 @@ namespace SudokuSolver
             return true;
         }
 
-        private IEnumerable<int[,]> GetNeighbors(int[,] state)
+        private IEnumerable<int[,]> GetNeighbors(int[,] state, ref PriorityQueue<int[,],int> pq)
         {
             var neighbors = new List<int[,]>();
 
@@ -65,8 +74,10 @@ namespace SudokuSolver
                             {
                                 int[,] newBoard = CopyBoard(state);
                                 newBoard[row, col] = num;
-                                //int newCost = CalculateCost(newBoard);
-                                neighbors.Add(newBoard);
+                                
+                                pq.Enqueue(newBoard, CalculateCost(newBoard));
+                                
+                                //neighbors.Add(newBoard);
                             }
                         }
                         return neighbors;
@@ -79,11 +90,9 @@ namespace SudokuSolver
         private bool IsValid(int[,] board, int row, int col, int num)
         {
             for (int i = 0; i < 9; i++)
-            {
                 if (board[row, i] == num || board[i, col] == num ||
                     board[row - row % 3 + i / 3, col - col % 3 + i % 3] == num)
                     return false;
-            }
             return true;
         }
 
